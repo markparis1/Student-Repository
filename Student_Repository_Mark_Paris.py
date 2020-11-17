@@ -53,6 +53,39 @@ class Student:
         
         return (self.cwid, self.name, self.major, self.course_grades)
 
+    """takes a lettewr grade, converts it top a gpa value and returns it"""    
+    def __convert_letter_to_gpa(self, letter_grade: str) -> float:
+        
+        grades: Dict[str, float] = {
+            'A': 4.0,
+            'A-': 3.75,
+            'B+': 3.25,
+            'B': 3.0,
+            'B-': 2.75,
+            'C+': 2.25,
+            'C': 2.0,
+            'C-': 0,
+            'D+': 0,
+            'D': 0,
+            'D-': 0,
+            'F': 0
+        }
+
+        return grades.get(letter_grade, "Invalid Grade")
+
+        
+
+    """returns students gpa"""
+    def calculate_gpa(self) -> float:
+
+        sum: float = 0.0
+        for key in self.course_grades.keys():
+
+            sum += self.__convert_letter_to_gpa(self.course_grades[key])
+
+        return round(sum/len(self.course_grades), 2)
+
+
     """returns a string representation of student"""
     def __str__(self) -> str:
 
@@ -208,4 +241,4 @@ class Repository:
 
 if __name__ == "__main__":
     repo = Repository("/Users/MyICloud/Documents/GitHub/Student-Repository")
-    repo.print_instructor_pretty_table()
+    repo.print_student_pretty_table()
