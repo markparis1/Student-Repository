@@ -218,11 +218,11 @@ class Repository:
     """print a pretty table of the list of students"""
     def print_student_pretty_table(self):
 
-        pt: PrettyTable = PrettyTable(field_names=['CWID', 'Name', 'Completed Courses'])
+        pt: PrettyTable = PrettyTable(field_names=['CWID', 'Name', 'Completed Courses', 'GPA'])
 
         for student in self.students:
 
-            pt.add_row([student.cwid, student.name, sorted(list(student.course_grades.keys()))])
+            pt.add_row([student.cwid, student.name, sorted(list(student.course_grades.keys())), student.calculate_gpa()])
         
         print(pt)
 
