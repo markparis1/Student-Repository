@@ -22,7 +22,7 @@ class RepositoryTest(unittest.TestCase):
  
         
         students2: ["Student"] = [s1,s2]
-        repo = Repository("/Users/MyICloud/Documents/GitHub/Student-Repository")
+        repo = Repository("/Users/MyICloud/Documents/GitHub/Student-Repository/tests")
 
         for index in range(len(repo.students)):
 

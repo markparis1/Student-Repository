@@ -146,6 +146,24 @@ class Instructor:
                         return True
         return False
 
+class Major:
+
+    def __init__(self, major: str, required_courses: List[str], elective_courses: List[str]):
+
+        self.major = major
+        self.required_courses = required_courses
+        self.elective_courses = elective_courses
+    
+    def add_course_to_major(self, course: str, flag: str):
+
+        if flag == 'R':
+            self.required_courses.append(course)
+        elif flag == 'E':
+            self.elective_courses.append(course)
+        else:
+            raise Exception("Invalid course flag, must be R or E")
+
+
 
 class Repository:
 
@@ -153,10 +171,15 @@ class Repository:
     def __init__(self, dir_path: str):
         self.students: List["Student"] = []
         self.instructors: List["Instructor"] = []
+        self.majors: List["Major"] = []
         self.dir_path = dir_path
+        self.read_majors()
         self.read_students()
         self.read_instructors()
         self.read_grades()
+        self.print_majors_pretty_table()
+        self.print_student_pretty_table()
+        self.print_instructor_pretty_table()
     
     """reads students.txt in directory and adds student data to students list"""
     def read_students(self):
@@ -179,10 +202,32 @@ class Repository:
 
         for line in grades_gen:
 
+            
+
             self.add_course_to_student(line[0], line[1], line[2])
 
             self.add_course_to_instructor(line[3],line[1])
-    
+
+    """reads majors.txt in directory and adds new majors to majors list and also adds the required courses to the majors in the list"""
+    def read_majors(self):
+
+        majors_gen: Iterator[List[str]] = file_reader(path.join(self.dir_path, "majors.txt"), 3, sep = "\t", header = True)
+
+        for line in majors_gen:
+
+            is_in_list: bool = False
+            if len(self.majors) > 0:
+                for m in self.majors:
+
+                    if line[0] == m.major:
+                        is_in_list = True
+                        m.add_course_to_major(line[2], line[1])
+
+            if is_in_list == False:
+                m: "Major" = Major(line[0],[],[])
+                m.add_course_to_major(line[2],line[1])
+                self.majors.append(m)
+            
     """add the given course and grade to the student in list of students with given cwid"""
     def add_course_to_student(self, cwid: int, course: str, grade: str):
 
@@ -214,21 +259,55 @@ class Repository:
         if new_instructor == False:
 
             print("grades.txt includes unknown instructor")
+
+    def __did_fail_course(self, grade: str):
+
+        if grade in ('A', 'A-', 'B+', 'B', 'B-', 'C+','C'):
+            return False
+        else:
+            return True
                 
     """print a pretty table of the list of students"""
     def print_student_pretty_table(self):
 
-        pt: PrettyTable = PrettyTable(field_names=['CWID', 'Name', 'Completed Courses', 'GPA'])
+        print("Student Summary")
+        pt: PrettyTable = PrettyTable(field_names=['CWID', 'Name', 'Major', 'Completed Courses', 'Remaining Required', 'Remaining Electives', 'GPA'])
 
         for student in self.students:
 
-            pt.add_row([student.cwid, student.name, sorted(list(student.course_grades.keys())), student.calculate_gpa()])
+            for m in self.majors:
+                if m.major == student.major:
+                    major: "Major" = m
+            
+            courses: [str] = []
+            for key in student.course_grades.keys():
+                
+                if not self.__did_fail_course(student.course_grades[key]):
+                    courses.append(key)
+
+
+            remaining_required = []
+            for course in major.required_courses:
+                if course not in courses:
+                    remaining_required.append(course)
+
+            remaining_electives = major.elective_courses
+            did_take_elective: bool = False
+            for course in major.elective_courses:
+                if course in courses:
+                    did_take_elective = True
+
+            if did_take_elective:
+                remaining_electives = []
+
+            pt.add_row([student.cwid, student.name, student.major, sorted(courses), sorted(remaining_required), sorted(remaining_electives), student.calculate_gpa()])
         
         print(pt)
 
     """print a pretty table of list of instructors"""
     def print_instructor_pretty_table(self):
         
+        print("Instructor Summary")
         pt: PrettyTable = PrettyTable(field_names=['CWID', 'Name', 'Dept', 'Course', 'Students'])
 
         for instructor in self.instructors:
@@ -239,6 +318,17 @@ class Repository:
         
         print(pt)
 
+    def print_majors_pretty_table(self):
+
+        print("Majors Summary")
+        pt: PrettyTable = PrettyTable(field_names=['Major', 'Required Courses', 'Electives'])
+
+        for m in self.majors:
+
+            pt.add_row([m.major, sorted(m.required_courses), sorted(m.elective_courses)])
+
+        print(pt)
+
+
 if __name__ == "__main__":
     repo = Repository("/Users/MyICloud/Documents/GitHub/Student-Repository")
-    repo.print_student_pretty_table()
