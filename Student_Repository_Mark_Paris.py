@@ -148,12 +148,14 @@ class Instructor:
 
 class Major:
 
+    """constructor provides name of major, a list of required courses and a list of elective courses"""
     def __init__(self, major: str, required_courses: List[str], elective_courses: List[str]):
 
         self.major = major
         self.required_courses = required_courses
         self.elective_courses = elective_courses
     
+    """adds the given coure to either required or elective courses depending on flag"""
     def add_course_to_major(self, course: str, flag: str):
 
         if flag == 'R':
@@ -162,6 +164,16 @@ class Major:
             self.elective_courses.append(course)
         else:
             raise Exception("Invalid course flag, must be R or E")
+    
+    """if instance data is equal to other object returns true"""
+    def __eq__(self, other: "Major") -> bool:
+
+        if self.elective_courses == other.elective_courses:
+            if self.required_courses == other.required_courses:
+                if self.major == other.major:
+                    return True
+
+        return False
 
 
 
@@ -260,6 +272,7 @@ class Repository:
 
             print("grades.txt includes unknown instructor")
 
+    """returns True if grade is failing, False if it is passing"""
     def __did_fail_course(self, grade: str):
 
         if grade in ('A', 'A-', 'B+', 'B', 'B-', 'C+','C'):
@@ -318,6 +331,7 @@ class Repository:
         
         print(pt)
 
+    """print a pretty table of list of Majors"""
     def print_majors_pretty_table(self):
 
         print("Majors Summary")
