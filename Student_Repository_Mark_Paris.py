@@ -196,21 +196,21 @@ class Repository:
     """reads students.txt in directory and adds student data to students list"""
     def read_students(self):
     
-        students_gen: Iterator[List[str]] = file_reader(path.join(self.dir_path, "students.txt"), 3, sep = ";", header = True)
+        students_gen: Iterator[List[str]] = file_reader(path.join(self.dir_path, "students.txt"), 3, sep = "\t", header = True)
         for student in students_gen:
             self.students.append(Student(student[0],student[1],student[2],{}))
        
     """reads instructors.txt in directory and adds instructor data to instructor list"""
     def read_instructors(self):
 
-        instructors_gen: Iterator[List[str]] = file_reader(path.join(self.dir_path, "instructors.txt"), 3, sep = "|", header = True)
+        instructors_gen: Iterator[List[str]] = file_reader(path.join(self.dir_path, "instructors.txt"), 3, sep = "\t", header = True)
         for instructor in instructors_gen:
             self.instructors.append(Instructor(instructor[0],instructor[1],instructor[2],{}))
         
     """reads grades.txt in directory and adds grades to each student in list of students, and add course to each instructor in list of instructors"""
     def read_grades(self):
 
-        grades_gen: Iterator[List[str]] = file_reader(path.join(self.dir_path, "grades.txt"), 4, sep = "|", header = True)
+        grades_gen: Iterator[List[str]] = file_reader(path.join(self.dir_path, "grades.txt"), 4, sep = "\t", header = True)
 
         for line in grades_gen:
 
