@@ -1,6 +1,7 @@
 from Student_Repository_Mark_Paris import Student, Instructor, Repository, Major
 import unittest
-
+from typing import Tuple
+import sqlite3
 
 s1:"Student" = Student("10103", "Baldwin, C", "SFEN",{'SSW 567': 'A','SSW 564': 'A-','SSW 687': 'B', 'CS 501': 'B'})        
 s2:"Student" = Student("10115","Wyatt, X","SFEN",{'SSW 567': 'A','SSW 564': 'B+','SSW 687': 'A','CS 545': 'A'})
@@ -30,6 +31,26 @@ class RepositoryTest(unittest.TestCase):
         for index in range(len(repo.students)):
 
             self.assertTrue(repo.students[index] == students2[index])
+
+    """test if data retreived from database matches expected data"""
+    def test_student_grades_table_db(self) -> None:
+        expected: [Tuple] = [("Bezos, J", "10115", "SSW 810","A","Rowland, J"),
+            ("Bezos, J", "10115", "CS 546", "F", "Hawking, S"),
+            ("Gates, B", "11714", "SSW 810", "B-", "Rowland, J"),
+            ("Gates, B", "11714", "CS 546", "A" , "Cohen, R"),
+            ("Gates, B", "11714", "CS 570", "A-", "Hawking, S"),
+            ("Jobs, S", "10103", "SSW 810", "A-", "Rowland, J"),
+            ("Jobs, S", "10103", "CS 501", "B", "Hawking, S"),
+            ("Musk, E", "10183", "SSW 555", "A", "Rowland, J"),
+            ("Musk, E", "10183", "SSW 810", "A", "Rowland, J")]
+
+
+        db: sqlite3.Connection = sqlite3.connect("/Users/MyICloud/Developer/810_startup.db")
+        i: int = 0
+        for row in db.execute("SELECT Students.Name as Student, Students.CWID, Course, Grade, Instructors.Name as Instructor From Grades Join Students on Grades.StudentCWID = Students.CWID Join Instructors on Grades.InstructorCWID = Instructors.CWID Order BY Students.Name"):
+            self.assertEqual(expected[i], row)
+            i += 1
+
         
         
     """tests if data going into instructor pretty table is accurate for test files"""
