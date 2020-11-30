@@ -1,6 +1,7 @@
 from typing import Dict, Tuple, List, Iterator, IO
 from prettytable import PrettyTable
 from os import path
+import sqlite3
 
 """read a file and split it by the provided separator"""
 def file_reader(path: str, fields: int, sep = ',', header = False) -> Iterator[List[str]]:
@@ -192,6 +193,20 @@ class Repository:
         self.print_majors_pretty_table()
         self.print_student_pretty_table()
         self.print_instructor_pretty_table()
+        self.student_grades_table_db("/Users/MyICloud/Developer/810_startup.db")
+
+    def student_grades_table_db(self, db_path):
+        
+        db: sqlite3.Connection = sqlite3.connect(db_path)
+        print("Student Grade Summary")
+        pt: PrettyTable = PrettyTable(field_names=['Name', 'CWID', 'Course', 'Grade', 'Instructor'])
+
+        for row in db.execute("SELECT Students.Name as Student, Students.CWID, Course, Grade, Instructors.Name as Instructor From Grades Join Students on Grades.StudentCWID = Students.CWID Join Instructors on Grades.InstructorCWID = Instructors.CWID Order BY Students.Name"):
+            pt.add_row(row)
+
+        
+        print(pt)
+
     
     """reads students.txt in directory and adds student data to students list"""
     def read_students(self):
