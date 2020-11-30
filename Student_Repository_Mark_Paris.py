@@ -193,7 +193,7 @@ class Repository:
         self.print_majors_pretty_table()
         self.print_student_pretty_table()
         self.print_instructor_pretty_table()
-        self.student_grades_table_db("/Users/MyICloud/Developer/810_startup.db")
+        
 
     """Print student grades pretty table using database data"""
     def student_grades_table_db(self, db_path):
