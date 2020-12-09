@@ -2,6 +2,7 @@ from typing import Dict, Tuple, List, Iterator, IO
 from prettytable import PrettyTable
 from os import path
 import sqlite3
+from flask import Flask
 
 """read a file and split it by the provided separator"""
 def file_reader(path: str, fields: int, sep = ',', header = False) -> Iterator[List[str]]:
@@ -190,9 +191,7 @@ class Repository:
         self.read_students()
         self.read_instructors()
         self.read_grades()
-        self.print_majors_pretty_table()
-        self.print_student_pretty_table()
-        self.print_instructor_pretty_table()
+        
         
 
     """Print student grades pretty table using database data"""
